@@ -1,3 +1,6 @@
+// UPDATE: This app now gets all actions by a user instead of Questions
+// TODO: Break up into classes and add CLI options
+
 // This app takes in a user ID from AnswerHub forums
 // Using the ID it gets all questions written by user
 // It updates all the body content of those questions
@@ -8,7 +11,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -20,12 +22,12 @@ import (
 type Credentials struct {
 	AnswerHubBaseURL string `json:"answerHubBaseURL"`
 	Username         string `json:"username"`
-	Password         string `json:"password`
+	Password         string `json:"password"`
 }
 
-// Author question author
+// Author user / author object
 type Author struct {
-	Id         int    `json:"id"`
+	ID         int    `json:"id"`
 	Username   string `json:"username"`
 	Realname   string `json:"realname"`
 	Reputation int    `json:"reputation"`
@@ -33,7 +35,7 @@ type Author struct {
 
 // Topics question topics
 type Topics struct {
-	Id                    int    `json:"id"`
+	ID                    int    `json:"id"`
 	CreationDate          int    `json:"creationDate"`
 	CreationDateFormatted string `json:"creationDateFormatted"`
 	Name                  string `json:"name"`
@@ -41,50 +43,76 @@ type Topics struct {
 	UsedCount             int    `json:"usedCount"`
 }
 
-// Question object
-type Question struct {
-	Id                 int      `json:"id"`
-	Type               string   `json:"type"`
-	CreationDate       int      `json:"creationDate"`
-	Title              string   `json:"creationDateFormatted"`
-	Body               string   `json:"body"`
-	BodyAsHTML         string   `json:"bodyAsHTML"`
-	Author             Author   `json:"Author"`
-	LastEditedAction   int      `json:"lastEditedAction"`
-	ActiveRevisionId   int      `json:"activeRevisionId`
-	RevisionIds        []int    `json:"revisionIds"`
-	LastActiveUserId   int      `json:"lastActiveUserId"`
-	LastActiveDate     int      `json:"lastActiveDate"`
-	Attachments        []string `json:"attachments"`
-	ChildrenIds        []int    `json:"childrenIds"`
-	CommentIds         []int    `json:"commentIds"`
-	Marked             bool     `json:"marked"`
-	Topics             []Topics `json:"topics"`
-	PrimaryContainerId int      `json:"primaryContainerId"`
-	ContainerIds       []int    `json:"containerIds"`
-	Slug               string   `json:"slug"`
-	Wiki               bool     `json:"wiki"`
-	Score              int      `json:"score"`
-	Depth              int      `json:"depth"`
-	ViewCount          int      `json:"viewCount"`
-	UpVoteCount        int      `json:"upVoteCount"`
-	DownVoteCount      int      `json:"downVoteCount"`
-	NodeStates         []string `json:"nodeStates"`
-	Answers            []int    `json:"answers"`
-	AnswerCount        int      `json:"answerCount"`
+// Node general item object
+type Node struct {
+	ID                    int      `json:"id"`
+	Type                  string   `json:"type"`
+	CreationDate          int      `json:"creationDate"`
+	CreationDateFormatted string   `json:"creationDateFormatted"`
+	Title                 string   `json:"title"`
+	Body                  string   `json:"body"`
+	BodyAsHTML            string   `json:"bodyAsHTML"`
+	Author                Author   `json:"author"`
+	LastEditedAction      int      `json:"lastEditedAction"`
+	ActiveRevisionID      int      `json:"activeRevisionId"`
+	RevisionIDs           []int    `json:"revisionIDs"`
+	LastActiveUserID      int      `json:"lastActiveUserId"`
+	LastActiveDate        int      `json:"lastActiveDate"`
+	Attachments           []string `json:"attachments"`
+	ChildrenIDs           []int    `json:"childrenIds"`
+	CommentIDs            []int    `json:"commentIds"`
+	Marked                bool     `json:"marked"`
+	Topics                []Topics `json:"topics"`
+	PrimaryContainerID    int      `json:"primaryContainerId"`
+	ContainerIDs          []int    `json:"containerIds"`
+	Slug                  string   `json:"slug"`
+	Wiki                  bool     `json:"wiki"`
+	Score                 int      `json:"score"`
+	Depth                 int      `json:"depth"`
+	ViewCount             int      `json:"viewCount"`
+	UpVoteCount           int      `json:"upVoteCount"`
+	DownVoteCount         int      `json:"downVoteCount"`
+	NodeStates            []string `json:"nodeStates"`
+	Answers               []int    `json:"answers"`
+	AnswerCount           int      `json:"answerCount"`
 }
 
 // Questions user questions data type
 //
 type Questions struct {
-	Name       string     `json:"name"`
-	Sort       string     `json:"sort"`
-	Page       int        `json:"page"`
-	PageSize   int        `json:"pageSize"`
-	PageCount  int        `json:"pageCount"`
-	ListCount  int        `json:"listCount"`
-	TotalCount int        `json:"totalCount"`
-	List       []Question `json:"list"`
+	Name       string `json:"name"`
+	Sort       string `json:"sort"`
+	Page       int    `json:"page"`
+	PageSize   int    `json:"pageSize"`
+	PageCount  int    `json:"pageCount"`
+	ListCount  int    `json:"listCount"`
+	TotalCount int    `json:"totalCount"`
+	List       []Node `json:"list"`
+}
+
+//Action is an individual action in a list of actions
+type Action struct {
+	ID            int    `json:"id"`
+	IP            string `json:"ip"`
+	User          Author `json:"user"`
+	ActionDate    int    `json:"actionDate"`
+	Canceled      bool   `json:"canceled"`
+	PrivateAction bool   `json:"privateAction"`
+	Verb          string `json:"verb"`
+	Node          Node   `json:"node"`
+	RootNode      Node   `json:"rootNode"`
+}
+
+// Actions is the user's actions data type
+type Actions struct {
+	Name       string   `json:"name"`
+	Sort       string   `json:"sort"`
+	Page       int      `json:"page"`
+	PageSize   int      `json:"pageSize"`
+	PageCount  int      `json:"pageCount"`
+	ListCount  int      `json:"listCount"`
+	TotalCount int      `json:"totalCount"`
+	List       []Action `json:"list"`
 }
 
 func loadCredentials(file string) Credentials {
@@ -92,7 +120,7 @@ func loadCredentials(file string) Credentials {
 	configFile, err := os.Open(file)
 	defer configFile.Close()
 	if err != nil {
-		fmt.Println(err.Error())
+		panic(err.Error())
 	}
 	jsonParser := json.NewDecoder(configFile)
 	jsonParser.Decode(&config)
@@ -138,17 +166,17 @@ func customBody() string {
 	return `{"body":"Nothing here"}`
 }
 
-func deleteQuestion(id int, auth Credentials) {
-	path := "node/" + strconv.Itoa(id) + "/delete.json"
-	println("\nDeleting question Id:", id)
+func deleteQuestion(ID int, auth Credentials) {
+	path := "node/" + strconv.Itoa(ID) + "/delete.json"
+	println("\nDeleting question ID:", ID)
 	makeRequest("PUT", path, nil, auth)
 
 }
 
-func updateQuestion(id int, auth Credentials) {
-	path := "question/" + strconv.Itoa(id) + ".json"
+func updateQuestion(ID int, auth Credentials) {
+	path := "question/" + strconv.Itoa(ID) + ".json"
 	body := customBody()
-	println("\nUpdating question Id:", id)
+	println("\nUpdating question ID:", ID)
 	makeRequest("PUT", path, []byte(body), auth)
 }
 
@@ -158,14 +186,14 @@ func deactivateUser(userID string, auth Credentials) {
 	makeRequest("PUT", path, nil, auth)
 }
 
-func parseQuestionList(list []Question, auth Credentials) {
+func parseQuestionList(list []Node, auth Credentials) {
 	for _, v := range list {
-		updateQuestion(v.Id, auth)
-		deleteQuestion(v.Id, auth)
+		// updateQuestion(v.ID, auth)
+		deleteQuestion(v.ID, auth)
 	}
 }
 
-func getUserByID(userID string, auth Credentials) []byte {
+func getUserQuestionsByID(userID string, auth Credentials) []byte {
 	path := "user/" + userID + "/question.json"
 	println("\nFetching user's questions:", userID)
 	return makeRequest("GET", path, nil, auth)
@@ -180,13 +208,49 @@ func processQuestionsBody(body []byte) *Questions {
 	return q
 }
 
-func startBanishment(userID string, auth Credentials) {
-	qs := processQuestionsBody(getUserByID(userID, auth))
+func processUserQuestions(userID string, auth Credentials) {
+	qs := processQuestionsBody(getUserQuestionsByID(userID, auth))
 	parseQuestionList(qs.List, auth)
 	if qs.TotalCount > qs.ListCount {
-		startBanishment(userID, auth)
+		processUserQuestions(userID, auth)
 	}
-	deactivateUser(userID, auth)
+}
+
+func getUserActionsByID(userID string, pageNumber int, auth Credentials) []byte {
+	path := "user/" + userID + "/action.json?page=" + strconv.Itoa(pageNumber)
+	println("\nFetching user's actions:", userID)
+	return makeRequest("GET", path, nil, auth)
+}
+
+func deleteNode(ID int, auth Credentials) {
+	path := "node/" + strconv.Itoa(ID) + "/delete.json"
+	println("\nDeleting node ID:", ID)
+	makeRequest("PUT", path, nil, auth)
+
+}
+
+func parseActionList(list []Action, auth Credentials) {
+	for _, v := range list {
+		deleteNode(v.Node.ID, auth)
+	}
+}
+
+func processActionsBody(body []byte) *Actions {
+	a := new(Actions)
+	err := json.Unmarshal(body, &a)
+	if err != nil {
+		panic(err)
+	}
+	return a
+}
+
+func processUserActions(userID string, lastPage int, auth Credentials) {
+	lastPage++
+	as := processActionsBody(getUserActionsByID(userID, lastPage, auth))
+	parseActionList(as.List, auth)
+	if as.PageCount > as.Page {
+		processUserActions(userID, lastPage, auth)
+	}
 }
 
 func main() {
@@ -195,8 +259,10 @@ func main() {
 
 	if len(os.Args) > 1 {
 		userID := os.Args[1]
-		startBanishment(userID, credentials)
+		// processUserQuestions(userID, credentials)
+		processUserActions(userID, 0, credentials)
+		deactivateUser(userID, credentials)
 	} else {
-		println("Provide userID")
+		println("ProvIDe userID")
 	}
 }
