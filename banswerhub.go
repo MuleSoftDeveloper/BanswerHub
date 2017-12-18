@@ -1,5 +1,5 @@
 // UPDATE: This app now gets all actions by a user instead of Questions
-// TODO: Break up into classes and add CLI options
+// TODO: Break up into packages and add CLI options
 
 // This app takes in a user ID from AnswerHub forums
 // Using the ID it gets all questions written by user
