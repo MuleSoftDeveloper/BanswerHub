@@ -1,6 +1,6 @@
 # AnswerHub Banishment Tool
 
-This utility fetches a spammer's comments, updates the body to remove spam, deletes the content, and deactivates the user's account.
+This utility fetches a spammer's actions (questions and answers), deletes the content, and deactivates the user's account.
 
 ## Configuration
 Create a *credentials.json* file with the following properties:
