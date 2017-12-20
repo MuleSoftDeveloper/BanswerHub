@@ -34,6 +34,15 @@ type Author struct {
 	Reputation int    `json:"reputation"`
 }
 
+type Attachment struct {
+	ID            int    `json:"id"`
+	FileName      string `json:"fileName"`
+	Size          int    `json:"size"`
+	sizeFormatted string `json:"sizeFormatted"`
+	URL           string `json:"url"`
+	Image         bool   `json:"image"`
+}
+
 // Topics are the question topics
 type Topics struct {
 	ID                    int    `json:"id"`
@@ -46,36 +55,36 @@ type Topics struct {
 
 // Node is the general item object for a node
 type Node struct {
-	ID                    int      `json:"id"`
-	Type                  string   `json:"type"`
-	CreationDate          int      `json:"creationDate"`
-	CreationDateFormatted string   `json:"creationDateFormatted"`
-	Title                 string   `json:"title"`
-	Body                  string   `json:"body"`
-	BodyAsHTML            string   `json:"bodyAsHTML"`
-	Author                Author   `json:"author"`
-	LastEditedAction      int      `json:"lastEditedAction"`
-	ActiveRevisionID      int      `json:"activeRevisionId"`
-	RevisionIDs           []int    `json:"revisionIDs"`
-	LastActiveUserID      int      `json:"lastActiveUserId"`
-	LastActiveDate        int      `json:"lastActiveDate"`
-	Attachments           []string `json:"attachments"`
-	ChildrenIDs           []int    `json:"childrenIds"`
-	CommentIDs            []int    `json:"commentIds"`
-	Marked                bool     `json:"marked"`
-	Topics                []Topics `json:"topics"`
-	PrimaryContainerID    int      `json:"primaryContainerId"`
-	ContainerIDs          []int    `json:"containerIds"`
-	Slug                  string   `json:"slug"`
-	Wiki                  bool     `json:"wiki"`
-	Score                 int      `json:"score"`
-	Depth                 int      `json:"depth"`
-	ViewCount             int      `json:"viewCount"`
-	UpVoteCount           int      `json:"upVoteCount"`
-	DownVoteCount         int      `json:"downVoteCount"`
-	NodeStates            []string `json:"nodeStates"`
-	Answers               []int    `json:"answers"`
-	AnswerCount           int      `json:"answerCount"`
+	ID                    int          `json:"id"`
+	Type                  string       `json:"type"`
+	CreationDate          int          `json:"creationDate"`
+	CreationDateFormatted string       `json:"creationDateFormatted"`
+	Title                 string       `json:"title"`
+	Body                  string       `json:"body"`
+	BodyAsHTML            string       `json:"bodyAsHTML"`
+	Author                Author       `json:"author"`
+	LastEditedAction      int          `json:"lastEditedAction"`
+	ActiveRevisionID      int          `json:"activeRevisionId"`
+	RevisionIDs           []int        `json:"revisionIDs"`
+	LastActiveUserID      int          `json:"lastActiveUserId"`
+	LastActiveDate        int          `json:"lastActiveDate"`
+	Attachments           []Attachment `json:"attachments"`
+	ChildrenIDs           []int        `json:"childrenIds"`
+	CommentIDs            []int        `json:"commentIds"`
+	Marked                bool         `json:"marked"`
+	Topics                []Topics     `json:"topics"`
+	PrimaryContainerID    int          `json:"primaryContainerId"`
+	ContainerIDs          []int        `json:"containerIds"`
+	Slug                  string       `json:"slug"`
+	Wiki                  bool         `json:"wiki"`
+	Score                 int          `json:"score"`
+	Depth                 int          `json:"depth"`
+	ViewCount             int          `json:"viewCount"`
+	UpVoteCount           int          `json:"upVoteCount"`
+	DownVoteCount         int          `json:"downVoteCount"`
+	NodeStates            []string     `json:"nodeStates"`
+	Answers               []int        `json:"answers"`
+	AnswerCount           int          `json:"answerCount"`
 }
 
 // Questions user questions data type
