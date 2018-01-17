@@ -304,8 +304,8 @@ func processUserActions(userID string, lastPage int, auth Credentials) {
 }
 
 // main starts the app
-// Gets the credentials from credentials.json located at the root
-// Get the CLI options (user ID)
+// Get the CLI flags.
+// Gets the credentials if all credential params aren't provided from credentials.json located at the current directory.
 // begins the HTTP requests for getting user action
 // finishes by deactivating user
 // NOTE:	It currently does not get and process the user's questions!
