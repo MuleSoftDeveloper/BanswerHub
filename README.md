@@ -2,7 +2,7 @@
 
 This utility fetches a spammer's actions (questions and answers), deletes the content, and deactivates the user's account.
 
-## Optiional Configuration
+## Optional Configuration
 Create a *credentials.json* file with the following properties:
 ```JSON
 {
