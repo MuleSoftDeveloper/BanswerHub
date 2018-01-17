@@ -11,7 +11,10 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
+	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -34,11 +37,12 @@ type Author struct {
 	Reputation int    `json:"reputation"`
 }
 
+// Attachment is a attachment object that might exist in a node.
 type Attachment struct {
 	ID            int    `json:"id"`
 	FileName      string `json:"fileName"`
 	Size          int    `json:"size"`
-	sizeFormatted string `json:"sizeFormatted"`
+	SizeFormatted string `json:"sizeFormatted"`
 	URL           string `json:"url"`
 	Image         bool   `json:"image"`
 }
@@ -132,7 +136,8 @@ func loadCredentials(file string) Credentials {
 	configFile, err := os.Open(file)
 	defer configFile.Close()
 	if err != nil {
-		panic(err.Error())
+		fmt.Printf("Please enter all credentials flags or include credentials.json file.\nUse -h flag to see list of available arguments and options\n\n")
+		log.Fatal(err.Error())
 	}
 	jsonParser := json.NewDecoder(configFile)
 	jsonParser.Decode(&config)
@@ -306,15 +311,42 @@ func processUserActions(userID string, lastPage int, auth Credentials) {
 // NOTE:	It currently does not get and process the user's questions!
 // 			this is because questions count as actions.
 func main() {
-	credPath := "credentials.json"
-	credentials := loadCredentials(credPath)
+	unamePtr := flag.String("user", "", "Your Answerhub username")
+	passPtr := flag.String("pass", "", "Your Answerhub password")
+	forumURLPtr := flag.String("url", "", "The root URL for your Answerhub instance")
+	banPtr := flag.String("ban", "", "ID of person to deactivate")
+	flag.Parse()
 
-	if len(os.Args) > 1 {
-		userID := os.Args[1]
-		// processUserQuestions(userID, credentials)
-		processUserActions(userID, 0, credentials)
-		deactivateUser(userID, credentials)
+	credentials := Credentials{}
+	loadedCredentials := Credentials{}
+	if *unamePtr == "" || *passPtr == "" || *forumURLPtr == "" {
+		credPath := "credentials.json"
+		loadedCredentials = loadCredentials(credPath)
+	}
+
+	if *unamePtr != "" {
+		credentials.Username = *unamePtr
 	} else {
-		println("ProvIDe userID")
+		credentials.Username = loadedCredentials.Username
+	}
+
+	if *passPtr != "" {
+		credentials.Password = *passPtr
+	} else {
+		credentials.Password = loadedCredentials.Password
+	}
+
+	if *forumURLPtr != "" {
+		credentials.AnswerHubBaseURL = *forumURLPtr
+	} else {
+		credentials.AnswerHubBaseURL = loadedCredentials.AnswerHubBaseURL
+	}
+
+	if *banPtr != "" {
+		// processUserQuestions(userID, credentials)
+		processUserActions(*banPtr, 0, credentials)
+		deactivateUser(*banPtr, credentials)
+	} else {
+		println("Provide user ID to ban using the -ban flag (e.g. -ban=1234)")
 	}
 }
