@@ -29,106 +29,6 @@ type Credentials struct {
 	Password         string `json:"password"`
 }
 
-// Author user / author object
-type Author struct {
-	ID         int    `json:"id"`
-	Username   string `json:"username"`
-	Realname   string `json:"realname"`
-	Reputation int    `json:"reputation"`
-}
-
-// Attachment is a attachment object that might exist in a node.
-type Attachment struct {
-	ID            int    `json:"id"`
-	FileName      string `json:"fileName"`
-	Size          int    `json:"size"`
-	SizeFormatted string `json:"sizeFormatted"`
-	URL           string `json:"url"`
-	Image         bool   `json:"image"`
-}
-
-// Topics are the question topics
-type Topics struct {
-	ID                    int    `json:"id"`
-	CreationDate          int    `json:"creationDate"`
-	CreationDateFormatted string `json:"creationDateFormatted"`
-	Name                  string `json:"name"`
-	Author                Author `json:"author"`
-	UsedCount             int    `json:"usedCount"`
-}
-
-// Node is the general item object for a node
-type Node struct {
-	ID                    int          `json:"id"`
-	Type                  string       `json:"type"`
-	CreationDate          int          `json:"creationDate"`
-	CreationDateFormatted string       `json:"creationDateFormatted"`
-	Title                 string       `json:"title"`
-	Body                  string       `json:"body"`
-	BodyAsHTML            string       `json:"bodyAsHTML"`
-	Author                Author       `json:"author"`
-	LastEditedAction      int          `json:"lastEditedAction"`
-	ActiveRevisionID      int          `json:"activeRevisionId"`
-	RevisionIDs           []int        `json:"revisionIDs"`
-	LastActiveUserID      int          `json:"lastActiveUserId"`
-	LastActiveDate        int          `json:"lastActiveDate"`
-	Attachments           []Attachment `json:"attachments"`
-	ChildrenIDs           []int        `json:"childrenIds"`
-	CommentIDs            []int        `json:"commentIds"`
-	Marked                bool         `json:"marked"`
-	Topics                []Topics     `json:"topics"`
-	PrimaryContainerID    int          `json:"primaryContainerId"`
-	ContainerIDs          []int        `json:"containerIds"`
-	Slug                  string       `json:"slug"`
-	Wiki                  bool         `json:"wiki"`
-	Score                 int          `json:"score"`
-	Depth                 int          `json:"depth"`
-	ViewCount             int          `json:"viewCount"`
-	UpVoteCount           int          `json:"upVoteCount"`
-	DownVoteCount         int          `json:"downVoteCount"`
-	NodeStates            []string     `json:"nodeStates"`
-	Answers               []int        `json:"answers"`
-	AnswerCount           int          `json:"answerCount"`
-}
-
-// Questions user questions data type
-// This is the main data type for questions retrieved
-type Questions struct {
-	Name       string `json:"name"`
-	Sort       string `json:"sort"`
-	Page       int    `json:"page"`
-	PageSize   int    `json:"pageSize"`
-	PageCount  int    `json:"pageCount"`
-	ListCount  int    `json:"listCount"`
-	TotalCount int    `json:"totalCount"`
-	List       []Node `json:"list"`
-}
-
-// Action is an individual action in a list of actions
-type Action struct {
-	ID            int    `json:"id"`
-	IP            string `json:"ip"`
-	User          Author `json:"user"`
-	ActionDate    int    `json:"actionDate"`
-	Canceled      bool   `json:"canceled"`
-	PrivateAction bool   `json:"privateAction"`
-	Verb          string `json:"verb"`
-	Node          Node   `json:"node"`
-	RootNode      Node   `json:"rootNode"`
-}
-
-// Actions is the user's actions data type
-type Actions struct {
-	Name       string   `json:"name"`
-	Sort       string   `json:"sort"`
-	Page       int      `json:"page"`
-	PageSize   int      `json:"pageSize"`
-	PageCount  int      `json:"pageCount"`
-	ListCount  int      `json:"listCount"`
-	TotalCount int      `json:"totalCount"`
-	List       []Action `json:"list"`
-}
-
 // loadCredentials reads the credentials file
 // returns a Credentials object
 func loadCredentials(file string) Credentials {
@@ -231,6 +131,81 @@ func getUserQuestionsByID(userID string, auth Credentials) []byte {
 	return makeRequest("GET", path, nil, auth)
 }
 
+// Author user / author object
+type Author struct {
+	ID         int    `json:"id"`
+	Username   string `json:"username"`
+	Realname   string `json:"realname"`
+	Reputation int    `json:"reputation"`
+}
+
+// Attachment is a attachment object that might exist in a node.
+type Attachment struct {
+	ID            int    `json:"id"`
+	FileName      string `json:"fileName"`
+	Size          int    `json:"size"`
+	SizeFormatted string `json:"sizeFormatted"`
+	URL           string `json:"url"`
+	Image         bool   `json:"image"`
+}
+
+// Topics are the question topics
+type Topics struct {
+	ID                    int    `json:"id"`
+	CreationDate          int    `json:"creationDate"`
+	CreationDateFormatted string `json:"creationDateFormatted"`
+	Name                  string `json:"name"`
+	Author                Author `json:"author"`
+	UsedCount             int    `json:"usedCount"`
+}
+
+// Node is the general item object for a node
+type Node struct {
+	ID                    int          `json:"id"`
+	Type                  string       `json:"type"`
+	CreationDate          int          `json:"creationDate"`
+	CreationDateFormatted string       `json:"creationDateFormatted"`
+	Title                 string       `json:"title"`
+	Body                  string       `json:"body"`
+	BodyAsHTML            string       `json:"bodyAsHTML"`
+	Author                Author       `json:"author"`
+	LastEditedAction      int          `json:"lastEditedAction"`
+	ActiveRevisionID      int          `json:"activeRevisionId"`
+	RevisionIDs           []int        `json:"revisionIDs"`
+	LastActiveUserID      int          `json:"lastActiveUserId"`
+	LastActiveDate        int          `json:"lastActiveDate"`
+	Attachments           []Attachment `json:"attachments"`
+	ChildrenIDs           []int        `json:"childrenIds"`
+	CommentIDs            []int        `json:"commentIds"`
+	Marked                bool         `json:"marked"`
+	Topics                []Topics     `json:"topics"`
+	PrimaryContainerID    int          `json:"primaryContainerId"`
+	ContainerIDs          []int        `json:"containerIds"`
+	Slug                  string       `json:"slug"`
+	Wiki                  bool         `json:"wiki"`
+	Score                 int          `json:"score"`
+	Depth                 int          `json:"depth"`
+	ViewCount             int          `json:"viewCount"`
+	UpVoteCount           int          `json:"upVoteCount"`
+	DownVoteCount         int          `json:"downVoteCount"`
+	NodeStates            []string     `json:"nodeStates"`
+	Answers               []int        `json:"answers"`
+	AnswerCount           int          `json:"answerCount"`
+}
+
+// Questions user questions data type
+// This is the main data type for questions retrieved
+type Questions struct {
+	Name       string `json:"name"`
+	Sort       string `json:"sort"`
+	Page       int    `json:"page"`
+	PageSize   int    `json:"pageSize"`
+	PageCount  int    `json:"pageCount"`
+	ListCount  int    `json:"listCount"`
+	TotalCount int    `json:"totalCount"`
+	List       []Node `json:"list"`
+}
+
 // processQuestionsBody takes the io byte array of the body and
 // parses it as a Questions object
 func processQuestionsBody(body []byte) *Questions {
@@ -277,6 +252,31 @@ func parseActionList(list []Action, auth Credentials) {
 	}
 }
 
+// Action is an individual action in a list of actions
+type Action struct {
+	ID            int    `json:"id"`
+	IP            string `json:"ip"`
+	User          Author `json:"user"`
+	ActionDate    int    `json:"actionDate"`
+	Canceled      bool   `json:"canceled"`
+	PrivateAction bool   `json:"privateAction"`
+	Verb          string `json:"verb"`
+	Node          Node   `json:"node"`
+	RootNode      Node   `json:"rootNode"`
+}
+
+// Actions is the user's actions data type
+type Actions struct {
+	Name       string   `json:"name"`
+	Sort       string   `json:"sort"`
+	Page       int      `json:"page"`
+	PageSize   int      `json:"pageSize"`
+	PageCount  int      `json:"pageCount"`
+	ListCount  int      `json:"listCount"`
+	TotalCount int      `json:"totalCount"`
+	List       []Action `json:"list"`
+}
+
 // processActionsBody takes the response from HTTP to the /action.json endpoint
 // return a Actions object
 func processActionsBody(body []byte) *Actions {
@@ -294,13 +294,15 @@ func processActionsBody(body []byte) *Actions {
 // If the current page is not the last page, it will call the next page
 // Actions that are deleted will still exist, they're just not published.
 // The list size never reduces.
-func processUserActions(userID string, lastPage int, auth Credentials) {
+func processUserActions(userID string, lastPage int, auth Credentials) int {
 	lastPage++
 	as := processActionsBody(getUserActionsByID(userID, lastPage, auth))
 	parseActionList(as.List, auth)
 	if as.PageCount > as.Page {
 		processUserActions(userID, lastPage, auth)
 	}
+
+	return as.TotalCount
 }
 
 // main starts the app
@@ -344,8 +346,10 @@ func main() {
 
 	if *banPtr != "" {
 		// processUserQuestions(userID, credentials)
-		processUserActions(*banPtr, 0, credentials)
+		totalDeleted := processUserActions(*banPtr, 0, credentials)
 		deactivateUser(*banPtr, credentials)
+
+		fmt.Printf("Deleted %v content from user %v\n", totalDeleted, *banPtr)
 	} else {
 		println("Provide user ID to ban using the -ban flag (e.g. -ban=1234)")
 	}
